@@ -77,3 +77,27 @@ class PageMaker:
             print(' ' * (spaceCounts[3] - len(movie['price'])), end = '')
             self.drawSpaces(max(lineLength, 0))
             print('██', end = '\n')
+
+    def drawCardsGrid(self, lineLength, cards):
+        spaceCounts = [0, 0, 0, 0]
+        spaceCounts[0] = len(str(len(cards)))
+        for card in cards:
+            spaceCounts[1] = max(spaceCounts[1], len(card['bankName']))
+            spaceCounts[2] = max(spaceCounts[2], len(card['cardNumber']))
+            spaceCounts[3] = max(spaceCounts[3], len(card['expireDate']))
+        for i in spaceCounts:
+            lineLength -= i
+        lineLength -= 15
+        for i in range(len(cards)):
+            card = cards[i]
+            print('██', end = '  ')
+            print(str(i + 4), end = '')
+            print(' ' * (spaceCounts[0] - len(str(i + 4))), end = ' - ')
+            print(card['bankName'], end = '')
+            print(' ' * (spaceCounts[1] - len(card['bankName'])), end = ', ')
+            print(card['cardNumber'], end = '')
+            print(' ' * (spaceCounts[2] - len(card['cardNumber'])), end = ', ')
+            print(card['expireDate'], end = '')
+            print(' ' * (spaceCounts[3] - len(card['expireDate'])), end = '  ')
+            self.drawSpaces(max(lineLength, 0))
+            print('██', end = '\n')

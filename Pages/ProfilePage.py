@@ -1,6 +1,9 @@
 import os
 
 from .PageMaker import PageMaker
+from .BuySubscriptionPage import BuySubscriptionPage
+from .EditProfilePage import EditProfilePage
+from .BankAccountsPage import BankAccountsPage
 
 
 class ProfilePage(PageMaker):
@@ -242,7 +245,23 @@ class ProfilePage(PageMaker):
         # Handle Commands
         while(1):
             command = input("Enter the number representing your command:\n")
-            if command == "14" and self.currentPage < (len(self.movieList) + 8) // 8:
+            if command == "9":
+                os.system('cls' if os.name == 'nt' else 'clear')
+                editProfilePage = EditProfilePage()
+                os.system('cls' if os.name == 'nt' else 'clear')
+                self.drawUi()
+            elif command == "11":
+                os.system('cls' if os.name == 'nt' else 'clear')
+                bankAccountsPage = BankAccountsPage()
+                os.system('cls' if os.name == 'nt' else 'clear')
+                self.drawUi()
+
+            elif command == "12":
+                os.system('cls' if os.name == 'nt' else 'clear')
+                buySubscriptionPage = BuySubscriptionPage()
+                os.system('cls' if os.name == 'nt' else 'clear')
+                self.drawUi()
+            elif command == "14" and self.currentPage < (len(self.movieList) + 8) // 8:
                 self.currentPage += 1
                 os.system('cls' if os.name == 'nt' else 'clear')
                 self.drawUi()
