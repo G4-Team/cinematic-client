@@ -14,18 +14,15 @@ class PageMaker:
 
     @staticmethod
     def drawLine(lineLength):
-        line = "█" * lineLength + "\n"
-        return line
+        print("█" * lineLength + "\n", end = '')
 
     @staticmethod
     def drawEndedLine(lineLength):
-        line = "██" + " " * (lineLength - 4) + "██\n"
-        return line
+        print("██" + " " * (lineLength - 4) + "██\n", end = '')
 
     @staticmethod
     def drawSpaces(spaceCount):
-        line = " " * spaceCount
-        return line
+        print(" " * spaceCount, end = '')
 
     def drawLineWithParameters(self, lineLength, *args):
         totalEmptySpaces = lineLength - 4
@@ -33,26 +30,50 @@ class PageMaker:
             totalEmptySpaces -= len(arg)
         eachSpace = totalEmptySpaces // (len(args) + 1)
         remainingSpaces = totalEmptySpaces - eachSpace * (len(args) + 1)
-        line = "██"
+        print("██", end = '')
         for arg in args:
             if remainingSpaces > 0:
-                line += self.drawSpaces(eachSpace + 1)
+                self.drawSpaces(eachSpace + 1)
                 remainingSpaces -= 1
             else:
-                line += self.drawSpaces(eachSpace)
-            line += arg
-        line += self.drawSpaces(eachSpace)
-        line += "██\n"
-        return line
+                self.drawSpaces(eachSpace)
+            print(arg, end = '')
+        self.drawSpaces(eachSpace)
+        print("██\n", end = '')
 
     def drawLineWithParametersStartAt(self, lineLength, start, *args):
         remainingSpace = lineLength - 4 - start
-        line = "██"
-        line += self.drawSpaces(start)
+        print("██", end = '')
+        self.drawSpaces(start)
         for arg in args:
-            line += arg
-            line += " "
+            print(arg, end = '')
+            print(" ", end = '')
             remainingSpace -= len(arg) + 1
-        line += self.drawSpaces(remainingSpace)
-        line += "██\n"
-        return line
+        self.drawSpaces(remainingSpace)
+        print("██\n", end = '')
+
+    def drawMovieGrid(self, lineLength, movies, page):
+        spaceCounts = [0, 0, 0, 0]
+        pageMovies = movies[(page - 1) * 8: min(page * 8, len(movies))]
+        for movie in pageMovies:
+            spaceCounts[0] = max(spaceCounts[0], len(movie['name']))
+            spaceCounts[1] = max(spaceCounts[1], len(movie['date']))
+            spaceCounts[2] = max(spaceCounts[2], len(movie['capacityLeft']))
+            spaceCounts[3] = max(spaceCounts[3], len(movie['price']))
+        for i in spaceCounts:
+            lineLength -= i
+        lineLength -= 16
+        for i in range(len(pageMovies)):
+            movie = pageMovies[i]
+            print('██', end = '  ')
+            print(str(i + 1) + ' - ', end = '')
+            print(movie['name'], end = '')
+            print(' ' * (spaceCounts[0] - len(movie['name'])), end = ', ')
+            print(movie['date'], end = '')
+            print(' ' * (spaceCounts[1] - len(movie['date'])), end = ', ')
+            print(movie['capacityLeft'], end = '')
+            print(' ' * (spaceCounts[2] - len(movie['capacityLeft'])), end = ', ')
+            print(movie['price'], end = '')
+            print(' ' * (spaceCounts[3] - len(movie['price'])), end = '')
+            self.drawSpaces(max(lineLength, 0))
+            print('██', end = '\n')
