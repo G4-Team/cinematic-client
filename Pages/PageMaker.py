@@ -78,7 +78,7 @@ class PageMaker:
             self.drawSpaces(max(lineLength, 0))
             print('██', end = '\n')
 
-    def drawCardsGrid(self, lineLength, cards):
+    def drawCardsGrid(self, lineLength, startAt, cards):
         spaceCounts = [0, 0, 0, 0]
         spaceCounts[0] = len(str(len(cards)))
         for card in cards:
@@ -91,8 +91,8 @@ class PageMaker:
         for i in range(len(cards)):
             card = cards[i]
             print('██', end = '  ')
-            print(str(i + 4), end = '')
-            print(' ' * (spaceCounts[0] - len(str(i + 4))), end = ' - ')
+            print(str(i + startAt), end = '')
+            print(' ' * (spaceCounts[0] - len(str(i + startAt))), end = ' - ')
             print(card['bankName'], end = '')
             print(' ' * (spaceCounts[1] - len(card['bankName'])), end = ', ')
             print(card['cardNumber'], end = '')

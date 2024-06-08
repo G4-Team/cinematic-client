@@ -2,10 +2,9 @@ from prompt_toolkit.shortcuts import yes_no_dialog, message_dialog, input_dialog
 import os
 
 from .PageMaker import PageMaker
-from .SelectBankAccountPage import SelectBankAccountPage
-from .AddBankAccountPage import AddBankAccountPage
+from .PaymentPage import PaymentPage
 
-class BankAccountsPage(PageMaker):
+class SelectBankAccountPage(PageMaker):
     def __init__(self):
         super().__init__()
         # Initializing page length
@@ -19,28 +18,19 @@ class BankAccountsPage(PageMaker):
 
         # Handle command
         while(1):
-            command = input("Enter the number representing your command:\n")
-            if command == "1":
+            command = input("Enter the number representing your card:\n")
+            try:
+                command = int(command)
+            except:
                 os.system('cls' if os.name == 'nt' else 'clear')
-                addBankAccountPage = AddBankAccountPage()
-            elif command == "2":
-                removeCard = input_dialog(title = "Remove Card", 
-                                        text = "Enter the number of the card you want to delele:",
-                                        style = self.dialogStyles).run()
-                if removeCard is not None:
-                    yesNo = yes_no_dialog(title = "Remove Card",
-                                      text = "Are you Sure you want to delete card " + removeCard,
-                                      style = self.dialogStyles).run()
-                    if yesNo:
-                        message_dialog(title = "Remove Card",
-                                   text = "Card removed successfuly!",
-                                   style = self.dialogStyles).run()
-            elif command == "3":
-                os.system('cls' if os.name == 'nt' else 'clear')
-                selectBankAccountPage = SelectBankAccountPage()
-            elif command == "4":
+                self.drawUi()
+                continue
+            if command == 1:
                 os.system('cls' if os.name == 'nt' else 'clear')
                 break
+            elif 2 <= command <= len(self.banksList) + 1:
+                os.system('cls' if os.name == 'nt' else 'clear')
+                paymentPage = PaymentPage(self.banksList[command - 2])
             os.system('cls' if os.name == 'nt' else 'clear')
             self.drawUi()
 
@@ -114,13 +104,10 @@ class BankAccountsPage(PageMaker):
                                   + len(card['cardNumber']) + len(card['expireDate']) + 23)
         self.drawLine(self.pageLength)
         self.drawEndedLine(self.pageLength)
-        self.drawLineWithParametersStartAt(self.pageLength, 2, 'Bank Accounts')
+        self.drawLineWithParametersStartAt(self.pageLength, 2, 'Select Bank Accounts')
         self.drawEndedLine(self.pageLength)
-        self.drawCardsGrid(self.pageLength, 5, self.banksList)
+        self.drawCardsGrid(self.pageLength, 2, self.banksList)
         self.drawEndedLine(self.pageLength)
-        self.drawLineWithParameters(self.pageLength, '1 - Add', '2 - Remove')
-        self.drawLineWithParameters(self.pageLength, '3 - Charge Accounts')
-        self.drawEndedLine(self.pageLength)
-        self.drawLineWithParameters(self.pageLength, '4 - Back')
+        self.drawLineWithParameters(self.pageLength, '1 - Back')
         self.drawEndedLine(self.pageLength)
         self.drawLine(self.pageLength)
