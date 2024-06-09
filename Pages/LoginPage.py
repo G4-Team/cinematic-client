@@ -3,6 +3,7 @@ import os
 
 from .PageMaker import PageMaker
 from .ProfilePage import ProfilePage
+from .AdminProfilePage import AdminProfilePage
 
 class LoginPage(PageMaker):
     def __init__(self):
@@ -36,8 +37,15 @@ class LoginPage(PageMaker):
                 # replace with checking if the user exists
                 if True:
                     os.system('cls' if os.name == 'nt' else 'clear')
-                    profilePage = ProfilePage()
-                    break
+                    if self.username == "admin" and self.password == "1234":
+                        adminProfilePage = AdminProfilePage()
+                        os.system('cls' if os.name == 'nt' else 'clear')
+                        break
+                    
+                    else:
+                        profilePage = ProfilePage()
+                        break
+                    
             else:
                 os.system('cls' if os.name == 'nt' else 'clear')
                 self.drawUi()
