@@ -1,18 +1,19 @@
 from prompt_toolkit.shortcuts import yes_no_dialog, message_dialog, input_dialog
 import os
+import requests
 
 from .PageMaker import PageMaker
 from .SelectBankAccountPage import SelectBankAccountPage
 from .AddBankAccountPage import AddBankAccountPage
 
 class BankAccountsPage(PageMaker):
-    def __init__(self):
+    def __init__(self, user_id):
         super().__init__()
         # Initializing page length
         self.pageLength = 40
 
         # Initializing variables
-        self.loadDb()
+        self.loadDb(user_id)
 
         # Draw Ui 
         self.drawUi()
@@ -22,91 +23,42 @@ class BankAccountsPage(PageMaker):
             command = input("Enter the number representing your command:\n")
             if command == "1":
                 os.system('cls' if os.name == 'nt' else 'clear')
-                addBankAccountPage = AddBankAccountPage()
+                addBankAccountPage = AddBankAccountPage(user_id)
+                self.loadDb(user_id)
+
             elif command == "2":
-                removeCard = input_dialog(title = "Remove Card", 
-                                        text = "Enter the number of the card you want to delele:",
-                                        style = self.dialogStyles).run()
-                if removeCard is not None:
-                    yesNo = yes_no_dialog(title = "Remove Card",
-                                      text = "Are you Sure you want to delete card " + removeCard,
-                                      style = self.dialogStyles).run()
-                    if yesNo:
-                        message_dialog(title = "Remove Card",
-                                   text = "Card removed successfuly!",
-                                   style = self.dialogStyles).run()
-            elif command == "3":
+                # Transfer
                 os.system('cls' if os.name == 'nt' else 'clear')
-                selectBankAccountPage = SelectBankAccountPage()
+                selectBankAccountPage = SelectBankAccountPage('T', user_id)
+
+            elif command == "3":
+                # Withdraw
+                os.system('cls' if os.name == 'nt' else 'clear')
+                selectBankAccountPage = SelectBankAccountPage('W', user_id)
+
             elif command == "4":
+                # Deposit
+                os.system('cls' if os.name == 'nt' else 'clear')
+                selectBankAccountPage = SelectBankAccountPage('D', user_id)
+
+            elif command == "5":
                 os.system('cls' if os.name == 'nt' else 'clear')
                 break
             os.system('cls' if os.name == 'nt' else 'clear')
             self.drawUi()
 
-    def loadDb(self):
-        self.banksList = [
-            {
-                "bankName": "meli",
-                "cardNumber": "6231 0231 4342 1234",
-                "expireDate": "1403/20"
-            },
-            {
-                "bankName": "meli",
-                "cardNumber": "6231 0231 4342 1234",
-                "expireDate": "1403/20"
-            },
-            {
-                "bankName": "meli",
-                "cardNumber": "6231 0231 4342 1234",
-                "expireDate": "1403/20"
-            },
-            {
-                "bankName": "meli",
-                "cardNumber": "6231 0231 4342 1234",
-                "expireDate": "1403/20"
-            },
-            {
-                "bankName": "meli",
-                "cardNumber": "6231 0231 4342 1234",
-                "expireDate": "1403/20"
-            },
-            {
-                "bankName": "meli",
-                "cardNumber": "6231 0231 4342 1234",
-                "expireDate": "1403/20"
-            },
-            {
-                "bankName": "meli",
-                "cardNumber": "6231 0231 4342 1234",
-                "expireDate": "1403/20"
-            },
-            {
-                "bankName": "meli",
-                "cardNumber": "6231 0231 4342 1234",
-                "expireDate": "1403/20"
-            },
-            {
-                "bankName": "meli",
-                "cardNumber": "6231 0231 4342 1234",
-                "expireDate": "1403/20"
-            },
-            {
-                "bankName": "meli",
-                "cardNumber": "6231 0231 4342 1234",
-                "expireDate": "1403/20"
-            },
-            {
-                "bankName": "meli",
-                "cardNumber": "6231 0231 4342 1234",
-                "expireDate": "1403/20"
-            },
-            {
-                "bankName": "meli",
-                "cardNumber": "6231 0231 4342 1234",
-                "expireDate": "1403/20"
-            },
-        ]
+    def loadDb(self, user_id):
+        requestGetAllCards = requests.get(self.url + 'bank/card/list/' + str(user_id) + '/',
+                                          cookies = self.get_cookies())
+        print(requestGetAllCards.json())
+        self.banksList = []
+        for key, value in requestGetAllCards.json()['cards'].items():
+            dic = {}
+            dic['bankName'] = value['bank_name']
+            dic['cardNumber'] = value['card_number']
+            dic['cvv2'] = value['cvv2']
+            dic['expireDate'] = value['expiration_date']
+            self.banksList.append(dic)
     
     def drawUi(self):
         for card in self.banksList:
@@ -118,9 +70,9 @@ class BankAccountsPage(PageMaker):
         self.drawEndedLine(self.pageLength)
         self.drawCardsGrid(self.pageLength, 5, self.banksList)
         self.drawEndedLine(self.pageLength)
-        self.drawLineWithParameters(self.pageLength, '1 - Add', '2 - Remove')
-        self.drawLineWithParameters(self.pageLength, '3 - Charge Accounts')
+        self.drawLineWithParameters(self.pageLength, '1 - Add', '2 - Transfer')
+        self.drawLineWithParameters(self.pageLength, '3 - Withdraw', '4 - Deposit')
         self.drawEndedLine(self.pageLength)
-        self.drawLineWithParameters(self.pageLength, '4 - Back')
+        self.drawLineWithParameters(self.pageLength, '5 - Back')
         self.drawEndedLine(self.pageLength)
         self.drawLine(self.pageLength)

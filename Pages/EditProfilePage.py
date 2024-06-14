@@ -1,10 +1,11 @@
 from prompt_toolkit.shortcuts import input_dialog, message_dialog
 import os
+import requests
 
 from .PageMaker import PageMaker
 
 class EditProfilePage(PageMaker):
-    def __init__(self):
+    def __init__(self, user_id):
         super().__init__()
         # Initializing page lenght
         self.pageLength = 40
@@ -34,23 +35,23 @@ class EditProfilePage(PageMaker):
                                                 style = self.dialogStyles).run()
                 os.system('cls' if os.name == 'nt' else 'clear')
                 self.drawUi()
-            elif command == "4":
+            elif command == "5":
                 self.newPassword = input_dialog(title = "New Password", 
                                              text = "Enter your new Password:", 
                                              password = True,
                                              style = self.dialogStyles).run()
                 os.system('cls' if os.name == 'nt' else 'clear')
                 self.drawUi()
-            elif command == "5":
+            elif command == "6":
                 self.confirmNewPassword = input_dialog(title = "Confirm New Password", 
                                                     text = "Enter your New Password again:",
                                                     password = True,
                                                     style = self.dialogStyles).run()
                 os.system('cls' if os.name == 'nt' else 'clear')
                 self.drawUi()
-            elif command == "6":
+            elif command == "4":
                 self.birthdate = input_dialog(title = "Birthdate", 
-                                              text = "Enter your Birthdate:\n(ex. yyyy/mm/dd)",
+                                              text = "Enter your Birthdate:\n(ex. yyyy-mm-dd)",
                                               style = self.dialogStyles).run()
                 os.system('cls' if os.name == 'nt' else 'clear')
                 self.drawUi()
@@ -61,9 +62,48 @@ class EditProfilePage(PageMaker):
                                              style = self.dialogStyles).run()
                 os.system('cls' if os.name == 'nt' else 'clear')
                 self.drawUi()
+            elif command == '9':
+                os.system('cls' if os.name == 'nt' else 'clear')
+                break
+
             elif command == "8":
-                message_dialog(title = "Info", text = "Profile Updated successfully!",
+                payloadProfile = {}
+                payloadPassword = {}
+                if self.username != "":
+                    payloadProfile['username'] = self.username
+                if self.email != "":
+                    payloadProfile['email'] = self.email
+                if self.phoneNumber != "":
+                    payloadProfile['phone'] = self.phoneNumber
+                if self.birthdate != "":
+                    payloadProfile['birthday'] = self.birthdate
+                if self.password != "":
+                    payloadPassword['old_password'] = self.password
+                if self.confirmNewPassword != "":
+                    payloadPassword['confirm_password'] = self.confirmNewPassword
+                if self.newPassword != "":
+                    payloadPassword['password'] = self.newPassword
+                if payloadProfile:
+                    requestProfile = requests.put(self.url + 'users/change-profile/' + str(user_id) + '/',                               json = payloadProfile,
+                                                  cookies = self.get_cookies())
+                    if requestProfile.status_code == 200:
+                        message_dialog(title = "Success", text = requestProfile.json()['message'],
                                style = self.dialogStyles).run()
+                    else:
+                        message_dialog(title = "Error", text = requestProfile.json()['message'],
+                               style = self.dialogStyles).run()
+
+                if payloadPassword:
+                    requestPassword = requests.put(self.url + 'users/change-password/' + str(user_id) + '/',
+                                                   json = payloadPassword,
+                                                   cookies = self.get_cookies())
+                    if requestPassword.status_code == 200:
+                        message_dialog(title = "Success", text = requestPassword.json()['message'],
+                               style = self.dialogStyles).run()
+                    else:
+                        message_dialog(title = "Error", text = requestPassword.json()['message'],
+                               style = self.dialogStyles).run()
+
                 break
             else:
                 os.system('cls' if os.name == 'nt' else 'clear')
@@ -81,14 +121,14 @@ class EditProfilePage(PageMaker):
 
     def drawUi(self):
         # makeing sure page can contain all content
-        self.pageLenght = max([self.pageLength, len(self.username) + 20,
-                              len(self.email) + 20,
-                              len(self.phoneNumber) + 20,
-                              len(self.birthdate) + 20,
-                              len(self.password) + 20,
-                              len(self.confirmNewPassword) + 20,
-                              len(self.newPassword) + 20])
-        self.drawLine(self.pageLenght)
+        self.pageLength = max([self.pageLength, len(self.username) + 25,
+                              len(self.email) + 30,
+                              len(self.phoneNumber) + 30,
+                              len(self.birthdate) + 30,
+                              len(self.password) + 30,
+                              len(self.confirmNewPassword) + 35,
+                              len(self.newPassword) + 30])
+        self.drawLine(self.pageLength)
         self.drawEndedLine(self.pageLength)
         # drawing username
         if self.username != "":
@@ -111,28 +151,29 @@ class EditProfilePage(PageMaker):
         else:
             self.drawLineWithParametersStartAt(self.pageLength, 2, '3 - Phone number') 
 
-        # drawing new password
-        if self.newPassword != "":
-            self.drawLineWithParametersStartAt(self.pageLength, 2, '4 - New Password', ':', 
-                                                     len(self.newPassword) * "*")
-        else:
-            self.drawLineWithParametersStartAt(self.pageLength, 2, '4 - New Password') 
-
-        # drawing confirm new password
-        if self.confirmNewPassword != "":
-            self.drawLineWithParametersStartAt(self.pageLength, 2, '5 - Confirm New Password', ':',
-                                                     len(self.confirmNewPassword) * "*")
-        else:
-            self.drawLineWithParametersStartAt(self.pageLength, 2, '5 - Confirm New password')
 
         # drawing birthdate
         if self.birthdate != "":
-            self.drawLineWithParametersStartAt(self.pageLength, 2, '6 - Birthdate', ':', 
+            self.drawLineWithParametersStartAt(self.pageLength, 2, '4 - Birthdate', ':', 
                                                      self.birthdate)
         else:
-            self.drawLineWithParametersStartAt(self.pageLength, 2, '6 - Birthdate')
+            self.drawLineWithParametersStartAt(self.pageLength, 2, '4 - Birthdate')
 
         self.drawEndedLine(self.pageLength)
+
+        # drawing new password
+        if self.newPassword != "":
+            self.drawLineWithParametersStartAt(self.pageLength, 2, '5 - New Password', ':', 
+                                                     len(self.newPassword) * "*")
+        else:
+            self.drawLineWithParametersStartAt(self.pageLength, 2, '5 - New Password') 
+
+        # drawing confirm new password
+        if self.confirmNewPassword != "":
+            self.drawLineWithParametersStartAt(self.pageLength, 2, '6 - Confirm New Password', ':',
+                                                     len(self.confirmNewPassword) * "*")
+        else:
+            self.drawLineWithParametersStartAt(self.pageLength, 2, '6 - Confirm New password')
         # drawing password
         if self.password != "":
             self.drawLineWithParametersStartAt(self.pageLength, 2, '7 - Password', ':', 
@@ -140,6 +181,8 @@ class EditProfilePage(PageMaker):
         else:
             self.drawLineWithParametersStartAt(self.pageLength, 2, '7 - Password') 
 
+        self.drawEndedLine(self.pageLength)
         self.drawLineWithParametersStartAt(self.pageLength, 2, '8 - Confirm')
+        self.drawLineWithParametersStartAt(self.pageLength, 2, '9 - Back')
         self.drawEndedLine(self.pageLength)
         self.drawLine(self.pageLength)

@@ -1,8 +1,11 @@
-from prompt_toolkit.shortcuts import input_dialog
+from prompt_toolkit.shortcuts import input_dialog, message_dialog
+import requests
 import os
+
 
 from .PageMaker import PageMaker
 from .ProfilePage import ProfilePage
+from .AdminProfilePage import AdminProfilePage
 
 class LoginPage(PageMaker):
     def __init__(self):
@@ -33,14 +36,30 @@ class LoginPage(PageMaker):
                 os.system('cls' if os.name == 'nt' else 'clear')
                 self.drawUi()
             elif command == "3":
-                # replace with checking if the user exists
-                if True:
+                request = requests.post("http://127.0.0.1:8000/users/login/", json = {
+                    "username": self.username,
+                    "password": self.password})
+                if request.status_code == 200:
+                    self.save_cookies(request.cookies)
+                    message_dialog(title = "Success",
+                                   text = request.json()['message'],
+                                   style = self.dialogStyles).run()
                     os.system('cls' if os.name == 'nt' else 'clear')
-                    profilePage = ProfilePage()
+                    if request.json()['is_admin']:
+                        adminProfilePage = AdminProfilePage(request.json()['user_id'])
+                    else:
+                        profilePage = ProfilePage(request.json()['user_id'])
                     break
-            else:
+                else:
+                    message_dialog(title = "Error",
+                                   text = request.json()['message'],
+                                   style = self.dialogStyles).run()
+            elif command == "4":
                 os.system('cls' if os.name == 'nt' else 'clear')
-                self.drawUi()
+                break
+
+            os.system('cls' if os.name == 'nt' else 'clear')
+            self.drawUi()
 
 
     def drawUi(self):
@@ -66,6 +85,7 @@ class LoginPage(PageMaker):
 
         self.drawEndedLine(self.pageLength)
         self.drawLineWithParametersStartAt(self.pageLength, 2, '3 - Confirm')
+        self.drawLineWithParametersStartAt(self.pageLength, 2, '4 - Back')
         self.drawEndedLine(self.pageLength)
         self.drawEndedLine(self.pageLength)
         self.drawLine(self.pageLength)

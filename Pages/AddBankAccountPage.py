@@ -1,10 +1,11 @@
 from prompt_toolkit.shortcuts import message_dialog, input_dialog
 import os
+import requests
 
 from .PageMaker import PageMaker
 
 class AddBankAccountPage(PageMaker):
-    def __init__(self):
+    def __init__(self, user_id):
         super().__init__()
         # Initializing page length
         self.pageLength = 50
@@ -15,12 +16,14 @@ class AddBankAccountPage(PageMaker):
         self.cvv2 = ""
         self.passcode = ""
         self.expireDate = ""
+        self.balance = ""
 
         # draw Ui 
         self.drawUi()
 
         # Handle commands
-        while(1):
+        self.flag = True
+        while(self.flag):
             command = input("Enter the number representing your command:\n")
             if command == "1":
                 self.bankName = input_dialog(title = 'Bank Name',
@@ -45,16 +48,42 @@ class AddBankAccountPage(PageMaker):
                                              style = self.dialogStyles,
                                              password = True).run()
             elif command == "6":
-                message_dialog(title = "Success",
-                               text = "Card added successfuly!",
-                               style = self.dialogStyles).run()
-                os.system('cls' if os.name == 'nt' else 'clear')
-                break
+                self.balance = input_dialog(title = "Balance",
+                                            text = "Enter Balance",
+                                            style = self.dialogStyles).run()
+                try:
+                    self.balance = int(self.balance)
+                except:
+                    self.balance = ""
+                    message_dialog(title = "Error", 
+                                   text = "Balance should be number",
+                                   style = self.dialogStyles).run()
             elif command == "7":
+                request = requests.post(self.url + 'bank/card/add/' + str(user_id) + '/',
+                                        cookies = self.get_cookies(), json = {
+                                        "bank_name": self.bankName,
+                                        "card_number": self.cardNumber,
+                                        "cvv2": self.cvv2,
+                                        "expiration_date": self.expireDate,
+                                        "password": self.passcode,
+                                        "balance": self.balance})
+                if request.status_code == 201:
+                    message_dialog(title = "Success",
+                               text = request.json()['message'], 
+                               style = self.dialogStyles).run()
+                    os.system('cls' if os.name == 'nt' else 'clear')
+                    print("what")
+                    break
+                else:
+                    message_dialog(title = "Error",
+                               text = request.json()['message'], 
+                               style = self.dialogStyles).run()
+            elif command == "8":
                 os.system('cls' if os.name == 'nt' else 'clear')
                 break
             os.system('cls' if os.name == 'nt' else 'clear')
             self.drawUi()
+        print("over")
 
     def drawUi(self):
         self.pageLength = max([self.pageLength, 
@@ -101,6 +130,13 @@ class AddBankAccountPage(PageMaker):
             self.drawLineWithParametersStartAt(self.pageLength, 2, '5 - Passcode') 
 
         self.drawEndedLine(self.pageLength)
-        self.drawLineWithParametersStartAt(self.pageLength, 2, '6 - Confirm     ', '7 - Back')
+        #draw balance
+        if self.balance != "":
+            self.drawLineWithParametersStartAt(self.pageLength, 2, '6 - Balance', ':', 
+                                                     str(self.balance))
+        else:
+            self.drawLineWithParametersStartAt(self.pageLength, 2, '6 - Balance') 
+        self.drawEndedLine(self.pageLength)
+        self.drawLineWithParametersStartAt(self.pageLength, 2, '7 - Confirm     ', '8 - Back')
         self.drawEndedLine(self.pageLength)
         self.drawLine(self.pageLength)

@@ -1,5 +1,6 @@
 import os
-from prompt_toolkit.shortcuts import input_dialog
+from prompt_toolkit.shortcuts import input_dialog, message_dialog
+import requests
 
 from .PageMaker import PageMaker
 from .LoginPage import LoginPage
@@ -61,15 +62,33 @@ class RegisterPage(PageMaker):
                                               style = self.dialogStyles).run()
                 os.system('cls' if os.name == 'nt' else 'clear')
                 self.drawUi()
+            elif command == "8":
+                os.system('cls' if os.name == 'nt' else 'clear')
+                break
+
             elif command == "7":
-                # replace with checking if the credentials are valid and registering the user
-                if True:
+                request = requests.post("http://127.0.0.1:8000/users/register/", json = {
+                    "username": self.username,
+                    "email": self.email,
+                    "phone": self.phoneNumber,
+                    "password": self.password,
+                    "confirm_password": self.confirmPassword,
+                    "birthday": self.birthdate})
+                if request.status_code == 201:
+                    message_dialog(title = "Success",
+                                   text = request.json()['message'],
+                                   style = self.dialogStyles).run()
                     os.system('cls' if os.name == 'nt' else 'clear')
                     loginPage = LoginPage()
+                    os.system('cls' if os.name == 'nt' else 'clear')
                     break
-            else:
-                os.system('cls' if os.name == 'nt' else 'clear')
-                self.drawUi()
+                else:
+                    message_dialog(title = "Error",
+                                   text = request.json()['message'],
+                                   style = self.dialogStyles).run()
+
+            os.system('cls' if os.name == 'nt' else 'clear')
+            self.drawUi()
 
 
 
@@ -85,17 +104,17 @@ class RegisterPage(PageMaker):
         self.drawEndedLine(self.pageLength)
         # drawing username
         if self.username != "":
-            self.drawLineWithParametersStartAt(self.pageLength, 2, '1 - Username', ':', 
+            self.drawLineWithParametersStartAt(self.pageLength, 2, '1 - Username*', ':', 
                                                      self.username)
         else:
-            self.drawLineWithParametersStartAt(self.pageLength, 2, '1 - Username') 
+            self.drawLineWithParametersStartAt(self.pageLength, 2, '1 - Username*') 
 
         # drawing email
         if self.email != "":
-            self.drawLineWithParametersStartAt(self.pageLength, 2, '2 - Email', ':', 
+            self.drawLineWithParametersStartAt(self.pageLength, 2, '2 - Email*', ':', 
                                                      self.email)
         else:
-            self.drawLineWithParametersStartAt(self.pageLength, 2, '2 - Email') 
+            self.drawLineWithParametersStartAt(self.pageLength, 2, '2 - Email*') 
         
         # drawing phone number
         if self.phoneNumber != "":
@@ -106,26 +125,27 @@ class RegisterPage(PageMaker):
 
         # drawing password
         if self.password != "":
-            self.drawLineWithParametersStartAt(self.pageLength, 2, '4 - Password', ':', 
+            self.drawLineWithParametersStartAt(self.pageLength, 2, '4 - Password*', ':', 
                                                      len(self.password) * "*")
         else:
-            self.drawLineWithParametersStartAt(self.pageLength, 2, '4 - Password') 
+            self.drawLineWithParametersStartAt(self.pageLength, 2, '4 - Password*') 
 
         # drawing confirm password
         if self.confirmPassword != "":
-            self.drawLineWithParametersStartAt(self.pageLength, 2, '5 - Confirm Password', ':', 
+            self.drawLineWithParametersStartAt(self.pageLength, 2, '5 - Confirm Password*', ':', 
                                                      len(self.confirmPassword) * "*")
         else:
-            self.drawLineWithParametersStartAt(self.pageLength, 2, '5 - Confirm password')
+            self.drawLineWithParametersStartAt(self.pageLength, 2, '5 - Confirm password*')
 
         # drawing birthdate
         if self.birthdate != "":
-            self.drawLineWithParametersStartAt(self.pageLength, 2, '6 - Birthdate', ':', 
+            self.drawLineWithParametersStartAt(self.pageLength, 2, '6 - Birthdate*', ':', 
                                                      self.birthdate)
         else:
-            self.drawLineWithParametersStartAt(self.pageLength, 2, '6 - Birthdate')
+            self.drawLineWithParametersStartAt(self.pageLength, 2, '6 - Birthdate*')
 
         self.drawEndedLine(self.pageLength)
         self.drawLineWithParametersStartAt(self.pageLength, 2, '7 - Confirm')
+        self.drawLineWithParametersStartAt(self.pageLength, 2, '8 - Back')
         self.drawEndedLine(self.pageLength)
         self.drawLine(self.pageLength)

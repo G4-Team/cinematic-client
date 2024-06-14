@@ -1,8 +1,10 @@
 from prompt_toolkit.styles import Style
+from http import cookiejar
 
 
 class PageMaker:
     def __init__(self):
+        self.url = "http://127.0.0.1:8000/"
         self.dialogStyles = Style.from_dict(
             {
                 "dialog": "bg:#333333",
@@ -54,7 +56,9 @@ class PageMaker:
 
     def drawMovieGrid(self, lineLength, movies, page):
         spaceCounts = [0, 0, 0, 0]
+        dic = {'name': 'name', 'date': 'date', 'capacityLeft': 'capacity', 'price': 'price'}
         pageMovies = movies[(page - 1) * 8: min(page * 8, len(movies))]
+        pageMovies.insert(0, dic)
         for movie in pageMovies:
             spaceCounts[0] = max(spaceCounts[0], len(movie['name']))
             spaceCounts[1] = max(spaceCounts[1], len(movie['date']))
@@ -66,7 +70,10 @@ class PageMaker:
         for i in range(len(pageMovies)):
             movie = pageMovies[i]
             print('██', end = '  ')
-            print(str(i + 1) + ' - ', end = '')
+            if i == 0:
+                self.drawSpaces(4)
+            else:
+                print(str(i) + ' - ', end = '')
             print(movie['name'], end = '')
             print(' ' * (spaceCounts[0] - len(movie['name'])), end = ', ')
             print(movie['date'], end = '')
@@ -80,7 +87,7 @@ class PageMaker:
 
     def drawCardsGrid(self, lineLength, startAt, cards):
         spaceCounts = [0, 0, 0, 0]
-        spaceCounts[0] = len(str(len(cards)))
+        spaceCounts[0] = len(str(len(cards) + 5))
         for card in cards:
             spaceCounts[1] = max(spaceCounts[1], len(card['bankName']))
             spaceCounts[2] = max(spaceCounts[2], len(card['cardNumber']))
@@ -101,3 +108,27 @@ class PageMaker:
             print(' ' * (spaceCounts[3] - len(card['expireDate'])), end = '  ')
             self.drawSpaces(max(lineLength, 0))
             print('██', end = '\n')
+
+    @staticmethod
+    def save_cookies(cookies):
+        cookie_jar = cookiejar.LWPCookieJar(filename="cookie.txt")
+        for cookie in cookies:
+            cookie_jar.set_cookie(cookiejar.Cookie(
+                version=0, name=cookie.name, value=cookie.value, port=None, port_specified=False,
+                domain=cookie.domain, domain_specified=True, domain_initial_dot=False,
+                path=cookie.path, path_specified=True, secure=cookie.secure, expires=cookie.expires,
+                discard=False, comment=None, comment_url=None, rest={'HttpOnly': cookie._rest.get('HttpOnly')}, rfc2109=False
+            ))
+        cookie_jar.save(ignore_discard=True, ignore_expires=True)
+
+
+
+    @staticmethod
+    def get_cookies():
+        try:
+            cookie_jar = cookiejar.LWPCookieJar('cookie.txt')
+            cookie_jar.load(ignore_discard=True, ignore_expires=True)
+        except FileNotFoundError:
+            cookie_jar={}
+        from requests.cookies import cookiejar_from_dict
+        return cookiejar_from_dict({c.name: c.value for c in cookie_jar})
