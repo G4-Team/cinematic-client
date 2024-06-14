@@ -7,6 +7,7 @@ from .EditProfilePage import EditProfilePage
 from .BankAccountsPage import BankAccountsPage
 from .MyReservationsPage import MyReservationsPage
 from .SelectBankAccountPage import SelectBankAccountPage
+from .ShowtimeDetailsPage import ShowtimeDetailsPage
 
 
 class ProfilePage(PageMaker):
@@ -28,40 +29,49 @@ class ProfilePage(PageMaker):
         # Handle Commands
         while(1):
             command = input("Enter the number representing your command:\n")
-            if command == "9":
+            try:
+                command = int(command)
+            except:
+                command = ""
+            if 1 <= command <= 8:
+                os.system('cls' if os.name == 'nt' else 'clear')
+                showtimeDetailsPage = ShowtimeDetailsPage(self.showtimeDetails[command - 1 + (self.currentPage - 1) * 8], user_id)
+                self.loadDb(user_id)
+
+            elif command == 9:
                 os.system('cls' if os.name == 'nt' else 'clear')
                 editProfilePage = EditProfilePage(user_id)
                 self.loadDb(user_id)
 
-            elif command == "10":
+            elif command == 10:
                 os.system('cls' if os.name == 'nt' else 'clear')
-                myReservationsPage = MyReservationsPage()
+                myReservationsPage = MyReservationsPage(user_id)
                 self.loadDb(user_id)
 
-            elif command == "11":
+            elif command == 11:
                 os.system('cls' if os.name == 'nt' else 'clear')
                 bankAccountsPage = BankAccountsPage(user_id)
                 self.loadDb(user_id)
 
-            elif command == "12":
+            elif command == 12:
                 os.system('cls' if os.name == 'nt' else 'clear')
                 buySubscriptionPage = BuySubscriptionPage(user_id)
                 self.loadDb(user_id)
 
-            elif command == "16":
+            elif command == 16:
                 os.system('cls' if os.name == 'nt' else 'clear')
                 selectBankAccountPage = SelectBankAccountPage('C', user_id)
                 self.loadDb(user_id)
 
-            elif command == "15":
+            elif command == 15:
                 os.system('cls' if os.name == 'nt' else 'clear')
                 os.remove('cookie.txt')
                 break
 
-            elif command == "14" and self.currentPage < (len(self.movieList) + 8) // 8:
+            elif command == 14 and self.currentPage < (len(self.movieList) + 8) // 8:
                 self.currentPage += 1
 
-            elif command == "13" and self.currentPage > 1:
+            elif command == 13 and self.currentPage > 1:
                 self.currentPage -= 1
 
             os.system('cls' if os.name == 'nt' else 'clear')
@@ -77,12 +87,14 @@ class ProfilePage(PageMaker):
         self.movieList = []
         requestMovieList = requests.get(self.url + 'cinema/showtimes/' + str(user_id) + '/',
                                         cookies = self.get_cookies())
+        self.showtimeDetails = []
         for key, value in requestMovieList.json()['showtimes'].items():
             dic = {}
             dic['name'] = value['movie']['name']
             dic['date'] = value['time']
             dic['capacityLeft'] = str(value['capacity'])
             dic['price'] = str(value['cinema']['ticket_price'])
+            self.showtimeDetails.append(value)
             self.movieList.append(dic)
 
     def drawUi(self):

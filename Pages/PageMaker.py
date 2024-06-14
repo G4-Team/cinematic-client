@@ -109,6 +109,18 @@ class PageMaker:
             self.drawSpaces(max(lineLength, 0))
             print('██', end = '\n')
 
+    def drawSeatsGrid(self, lineLength, seats):
+        line = "\\ "
+        for i in range(len(seats[0])):
+            if i == len(seats[0]) - 1:
+                line += str(i + 1)
+            else:
+                line += str(i + 1) + ' '
+        self.drawLineWithParameters(lineLength, line)
+        for i in range(len(seats)):
+            line = str(i + 1) + " " + " ".join(seats[i])
+            self.drawLineWithParameters(lineLength, line)
+
     @staticmethod
     def save_cookies(cookies):
         cookie_jar = cookiejar.LWPCookieJar(filename="cookie.txt")
@@ -132,3 +144,33 @@ class PageMaker:
             cookie_jar={}
         from requests.cookies import cookiejar_from_dict
         return cookiejar_from_dict({c.name: c.value for c in cookie_jar})
+
+    def drawMovieGridR(self, lineLength, movies, page):
+        spaceCounts = [0, 0, 0, 0, 0]
+        dic = {'id': 'id', 'name': 'name', 'date': 'date', 'seat': 'seat', 'price': 'price'}
+        pageMovies = movies[(page - 1) * 8: min(page * 8, len(movies))]
+        pageMovies.insert(0, dic)
+        for movie in pageMovies:
+            spaceCounts[0] = max(spaceCounts[0], len(movie['id']))
+            spaceCounts[1] = max(spaceCounts[1], len(movie['name']))
+            spaceCounts[2] = max(spaceCounts[2], len(movie['date']))
+            spaceCounts[3] = max(spaceCounts[3], len(movie['seat']))
+            spaceCounts[4] = max(spaceCounts[4], len(movie['price']))
+        for i in spaceCounts:
+            lineLength -= i
+        lineLength -= 14
+        for i in range(len(pageMovies)):
+            movie = pageMovies[i]
+            print('██', end = '  ')
+            print(movie['id'], end = '')
+            print(' ' * (spaceCounts[0] - len(movie['id'])), end = ', ')
+            print(movie['name'], end = '')
+            print(' ' * (spaceCounts[1] - len(movie['name'])), end = ', ')
+            print(movie['date'], end = '')
+            print(' ' * (spaceCounts[2] - len(movie['date'])), end = ', ')
+            print(movie['seat'], end = '')
+            print(' ' * (spaceCounts[3] - len(movie['seat'])), end = ', ')
+            print(movie['price'], end = '')
+            print(' ' * (spaceCounts[4] - len(movie['price'])), end = '')
+            self.drawSpaces(max(lineLength, 0))
+            print('██', end = '\n')

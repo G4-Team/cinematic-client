@@ -5,13 +5,13 @@ import requests
 from .PageMaker import PageMaker
 
 class MyReservationsPage(PageMaker):
-    def __init__(self):
+    def __init__(self, user_id):
         super().__init__()
         # Initializing page length
         self.pageLength = 50
 
         # Initializing varibales
-        self.loadDb()
+        self.loadDb(user_id)
 
         # draw Ui 
         self.drawUi()
@@ -50,28 +50,41 @@ class MyReservationsPage(PageMaker):
         maxLen = 0
         for movie in self.movieList:
             maxLen = max(maxLen, len(movie['name']) + len(movie['date']) 
-                + len(movie['capacityLeft']) + len(movie['price']))
+                + len(movie['seat']) + len(movie['price']))
         maxLen += 25
         self.pageLength = max(maxLen, self.pageLength)
         self.drawLine(self.pageLength)
         self.drawEndedLine(self.pageLength)
         self.drawLineWithParametersStartAt(self.pageLength, 2, 'My Reservations')
         self.drawEndedLine(self.pageLength)
-        self.drawMovieGrid(self.pageLength, self.movieList, self.currentPage)
+        self.drawMovieGridR(self.pageLength, self.movieList, self.currentPage)
         self.drawEndedLine(self.pageLength)
         # drawing next and previous page if needed
-        if self.currentPage == 1:
-            self.drawLineWithParameters(self.pageLength, '11 - Next')
-        elif self.currentPage == (len(self.movieList) + 8 ) // 8:
-            self.drawLineWithParameters(self.pageLength, '12 - Previous')
-        else:
-            self.drawLineWithParameters(self.pageLength, '12 - Previous', '11 - Next')
-        self.drawEndedLine(self.pageLength)
+        if (len(self.movieList) + 8) // 8 != 1:
+            if self.currentPage == 1:
+                self.drawLineWithParameters(self.pageLength, '11 - Next')
+            elif self.currentPage == (len(self.movieList) + 8 ) // 8:
+                self.drawLineWithParameters(self.pageLength, '12 - Previous')
+            else:
+                self.drawLineWithParameters(self.pageLength, '12 - Previous', '11 - Next')
+            self.drawEndedLine(self.pageLength)
         self.drawLineWithParameters(self.pageLength, '9 - Cancel', '10 - Back')
         self.drawEndedLine(self.pageLength)
         self.drawLine(self.pageLength)
 
-    def loadDb(self):
+    def loadDb(self, user_id):
         self.currentPage = 1
         self.movieList = []
-        request = requests.get()
+        request = requests.get(self.url + 'cinema/reserved-seats/' + str(user_id) + '/',
+                               cookies = self.get_cookies())
+        for key, value in request.json()['reservations'].items():
+            req = requests.get(self.url + 'cinema/showtimes/' + str(value['showtime_id']) + '/',
+                               cookies = self.get_cookies())
+            dic = {}
+            dic['id'] = str(value['id'])
+            dic['name'] = req.json()['showtimes']['showtime0']['movie']['name']
+            dic['date'] = req.json()['showtimes']['showtime0']['time']
+            dic['price'] =  str(req.json()['showtimes']['showtime0']['cinema']['ticket_price'])
+            dic['seat'] = 'row: ' + str(value['row']) + ' - col: ' + str(value['col'])
+            self.movieList.append(dic)
+

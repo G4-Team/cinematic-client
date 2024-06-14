@@ -46,7 +46,9 @@ class BuySubscriptionPage(PageMaker):
                                       text = "Are you sure you want to buy the Gold subscription for 600T?", 
                                       style = self.dialogStyles).run()
                 if yesNo:
-                    request = requests.put(self.url + 'users/buy-subscription/' + str(user_id) + '/', json = {
+                    request = requests.put(self.url + 'users/buy-subscription/' + str(user_id) + '/', 
+                                           cookies = self.get_cookies(),
+                                           json = {
                         "type_subscription": 'gold'
                     })
                     break

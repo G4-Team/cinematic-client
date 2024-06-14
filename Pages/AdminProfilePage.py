@@ -18,226 +18,6 @@ class AdminProfilePage(PageMaker):
 
         self.currentPage = 1
 
-        # should connect to backend and get date from database later
-        self.movieList = [
-            {
-                "name": "openhaimerjdlfajsdfjalsdjflajsdjlajsdls",
-                "date": "2024/06/20",
-                "capacityLeft": "12",
-                "price": "20 000T"
-            },
-            {
-                "name": "barbe",
-                "date": "2022/11/12",
-                "capacityLeft": "30",
-                "price": "42 000T"
-            },
-            {
-                "name": "SpiderMan no way home",
-                "date": "2023/02/30",
-                "capacityLeft": "6",
-                "price": "35 000T"
-            },
-            {
-                "name": "openhaimerjdlfajsdfjalsdjflajsdjlajsdls",
-                "date": "2024/06/20",
-                "capacityLeft": "12",
-                "price": "20 000T"
-            },
-            {
-                "name": "barbe",
-                "date": "2022/11/12",
-                "capacityLeft": "30",
-                "price": "42 000T"
-            },
-            {
-                "name": "SpiderMan no way home",
-                "date": "2023/02/30",
-                "capacityLeft": "6",
-                "price": "35 000T"
-            },
-            {
-                "name": "openhaimerjdlfajsdfjalsdjflajsdjlajsdls",
-                "date": "2024/06/20",
-                "capacityLeft": "12",
-                "price": "20 000T"
-            },
-            {
-                "name": "barbe",
-                "date": "2022/11/12",
-                "capacityLeft": "30",
-                "price": "42 000T"
-            },
-            {
-                "name": "SpiderMan no way home",
-                "date": "2023/02/30",
-                "capacityLeft": "6",
-                "price": "35 000T"
-            },
-            {
-                "name": "openhaimerjdlfajsdfjalsdjflajsdjlajsdls",
-                "date": "2024/06/20",
-                "capacityLeft": "12",
-                "price": "20 000T"
-            },
-            {
-                "name": "barbe",
-                "date": "2022/11/12",
-                "capacityLeft": "30",
-                "price": "42 000T"
-            },
-            {
-                "name": "SpiderMan no way home",
-                "date": "2023/02/30",
-                "capacityLeft": "6",
-                "price": "35 000T"
-            },
-            {
-                "name": "openhaimerjdlfajsdfjalsdjflajsdjlajsdls",
-                "date": "2024/06/20",
-                "capacityLeft": "12",
-                "price": "20 000T"
-            },
-            {
-                "name": "barbe",
-                "date": "2022/11/12",
-                "capacityLeft": "30",
-                "price": "42 000T"
-            },
-            {
-                "name": "SpiderMan no way home",
-                "date": "2023/02/30",
-                "capacityLeft": "6",
-                "price": "35 000T"
-            },
-            {
-                "name": "openhaimerjdlfajsdfjalsdjflajsdjlajsdls",
-                "date": "2024/06/20",
-                "capacityLeft": "12",
-                "price": "20 000T"
-            },
-            {
-                "name": "barbe",
-                "date": "2022/11/12",
-                "capacityLeft": "30",
-                "price": "42 000T"
-            },
-            {
-                "name": "SpiderMan no way home",
-                "date": "2023/02/30",
-                "capacityLeft": "6",
-                "price": "35 000T"
-            },
-            {
-                "name": "openhaimerjdlfajsdfjalsdjflajsdjlajsdls",
-                "date": "2024/06/20",
-                "capacityLeft": "12",
-                "price": "20 000T"
-            },
-            {
-                "name": "barbe",
-                "date": "2022/11/12",
-                "capacityLeft": "30",
-                "price": "42 000T"
-            },
-            {
-                "name": "SpiderMan no way home",
-                "date": "2023/02/30",
-                "capacityLeft": "6",
-                "price": "35 000T"
-            },
-            {
-                "name": "openhaimerjdlfajsdfjalsdjflajsdjlajsdls",
-                "date": "2024/06/20",
-                "capacityLeft": "12",
-                "price": "20 000T"
-            },
-            {
-                "name": "barbe",
-                "date": "2022/11/12",
-                "capacityLeft": "30",
-                "price": "42 000T"
-            },
-            {
-                "name": "SpiderMan no way home",
-                "date": "2023/02/30",
-                "capacityLeft": "6",
-                "price": "35 000T"
-            },
-            {
-                "name": "openhaimerjdlfajsdfjalsdjflajsdjlajsdls",
-                "date": "2024/06/20",
-                "capacityLeft": "12",
-                "price": "20 000T"
-            },
-            {
-                "name": "barbe",
-                "date": "2022/11/12",
-                "capacityLeft": "30",
-                "price": "42 000T"
-            },
-            {
-                "name": "SpiderMan no way home",
-                "date": "2023/02/30",
-                "capacityLeft": "6",
-                "price": "35 000T"
-            },
-            {
-                "name": "openhaimerjdlfajsdfjalsdjflajsdjlajsdls",
-                "date": "2024/06/20",
-                "capacityLeft": "12",
-                "price": "20 000T"
-            },
-            {
-                "name": "barbe",
-                "date": "2022/11/12",
-                "capacityLeft": "30",
-                "price": "42 000T"
-            },
-            {
-                "name": "SpiderMan no way home",
-                "date": "2023/02/30",
-                "capacityLeft": "6",
-                "price": "35 000T"
-            },
-            {
-                "name": "openhaimerjdlfajsdfjalsdjflajsdjlajsdls",
-                "date": "2024/06/20",
-                "capacityLeft": "12",
-                "price": "20 000T"
-            },
-            {
-                "name": "barbe",
-                "date": "2022/11/12",
-                "capacityLeft": "30",
-                "price": "42 000T"
-            },
-            {
-                "name": "SpiderMan no way home",
-                "date": "2023/02/30",
-                "capacityLeft": "6",
-                "price": "35 000T"
-            },
-            {
-                "name": "openhaimerjdlfajsdfjalsdjflajsdjlajsdls",
-                "date": "2024/06/20",
-                "capacityLeft": "12",
-                "price": "20 000T"
-            },
-            {
-                "name": "barbe",
-                "date": "2022/11/12",
-                "capacityLeft": "30",
-                "price": "42 000T"
-            },
-            {
-                "name": "SpiderMan no way home",
-                "date": "2023/02/30",
-                "capacityLeft": "6",
-                "price": "35 000T"
-            },
-        ]
-
         # Drawing ui 
         self.drawUi()
 
@@ -269,9 +49,19 @@ class AdminProfilePage(PageMaker):
             self.drawUi()
 
     def loadDb(self, user_id):
-            request = requests.get(self.url + 'users/profile/' + str(user_id) + '/',
+        request = requests.get(self.url + 'users/profile/' + str(user_id) + '/',
                                    cookies = self.get_cookies())
-            self.username = 'Username: ' + request.json()['user']['username']
+        self.username = 'Username: ' + request.json()['user']['username']
+        self.movieList = []
+        request = requests.get(self.url + 'cinema/showtimes/',
+                                  cookies = self.get_cookies())
+        for key, value in request.json()['showtimes'].items():
+            dic = {}
+            dic['name'] = value['movie']['name']
+            dic['date'] = value['time']
+            dic['capacityLeft'] = str(value['capacity'])
+            dic['price'] = str(value['cinema']['ticket_price'])
+            self.movieList.append(dic)
 
     def drawUi(self):
         # Makeing sure the pageLength can contain everything 

@@ -50,7 +50,6 @@ class BankAccountsPage(PageMaker):
     def loadDb(self, user_id):
         requestGetAllCards = requests.get(self.url + 'bank/card/list/' + str(user_id) + '/',
                                           cookies = self.get_cookies())
-        print(requestGetAllCards.json())
         self.banksList = []
         for key, value in requestGetAllCards.json()['cards'].items():
             dic = {}
