@@ -28,22 +28,32 @@ class ShowtimeDetailsPage(PageMaker):
                 self.selectedCol = input_dialog(title = "Column",
                                                 text = "Enter column:",
                                                 style = self.dialogStyles).run()
+                if self.selectedRow is None or self.selectedCol is None or self.selectedRow == "" or self.selectedCol == "":
+                    message_dialog(title = "Error",
+                                   text = "Row or Col cant be empty",
+                                   style = self.dialogStyles).run()
+                    continue
                 yesNo = yes_no_dialog(title = "Confirm",
                                       text = "Are you sure you want to reserve seat" + self.selectedRow + ' ' + self.selectedCol + "?",
                                       style = self.dialogStyles).run()
                 if yesNo:
-                    request = requests.post(self.url + 'cinema/reserve/' + str(user_id) + '/' + 
-                        str(self.getId(self.selectedRow, self.selectedCol)) + '/',
+                    try:
+                        request = requests.post(self.url + 'cinema/reserve/' + str(user_id) + '/' + 
+                            str(self.getId(self.selectedRow, self.selectedCol)) + '/',
                                             cookies = self.get_cookies())
-                    if request.status_code == 200:
-                        message_dialog(title = "Success",
+                        if request.status_code == 200:
+                            message_dialog(title = "Success",
                                        text = request.json()['message'],
                                        style = self.dialogStyles).run()
-                        self.loadDb(showtime['id'])
+                            self.loadDb(showtime['id'])
 
-                    else:
-                        message_dialog(title = "Error",
+                        else:
+                            message_dialog(title = "Error",
                                        text = request.json()['message'],
+                                       style = self.dialogStyles).run()
+                    except:
+                        message_dialog(title = "Error",
+                                       text = "Server not responding",
                                        style = self.dialogStyles).run()
             if command == "2":
                 os.system('cls' if os.name == 'nt' else 'clear')
@@ -60,24 +70,28 @@ class ShowtimeDetailsPage(PageMaker):
 
             
     def loadDb(self, showtime_id):
-        request = requests.get(self.url + 'cinema/showtime-seats/' + str(showtime_id) + '/',
+        try:
+            request = requests.get(self.url + 'cinema/showtime-seats/' + str(showtime_id) + '/',
                                cookies = self.get_cookies())
-        self.row = 0
-        self.col = 0
-        self.seatsRaw = request.json()['seats']
-        for key, value in request.json()['seats'].items():
-            self.row = max(self.row, value['row'] + 1)
-            self.col = max(self.col, value['col'] + 1)
+            self.row = 0
+            self.col = 0
+            self.seatsRaw = request.json()['seats']
+            for key, value in request.json()['seats'].items():
+                self.row = max(self.row, value['row'] + 1)
+                self.col = max(self.col, value['col'] + 1)
 
-        self.seats = [['*' for i in range(self.col)] for j in range(self.row)] 
-        for key, value in request.json()['seats'].items():
-            if value['is_reserved']:
-                self.seats[value['row']][value['col']] = '#'
+            self.seats = [['*' for i in range(self.col)] for j in range(self.row)] 
+            for key, value in request.json()['seats'].items():
+                if value['is_reserved']:
+                    self.seats[value['row']][value['col']] = '#'
 
-        request = requests.get(self.url + 'cinema/showtime/' + str(showtime_id) + '/',
+            request = requests.get(self.url + 'cinema/showtime/' + str(showtime_id) + '/',
                                cookies = self.get_cookies())
-        print(request.json())
-        self.showtime = request.json()['showtime']
+            self.showtime = request.json()['showtime']
+        except:
+            message_dialog(title = "Error",
+                           text = "Server not responding",
+                           style = self.dialogStyles).run()
 
     def drawUi(self):
         self.pageLength = max([self.pageLength, self.col + 10,

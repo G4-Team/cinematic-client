@@ -13,12 +13,12 @@ class RegisterPage(PageMaker):
         self.pageLength = 40
 
         # Initializing variables
-        self.username = ""
-        self.email = ""
-        self.phoneNumber = ""
-        self.password = ""
-        self.confirmPassword = ""
-        self.birthdate = ""
+        self.username = None
+        self.email = None
+        self.phoneNumber = None
+        self.password = None
+        self.confirmPassword = None
+        self.birthdate = None
 
         # Drawing Ui 
         self.drawUi()
@@ -67,16 +67,29 @@ class RegisterPage(PageMaker):
                 break
 
             elif command == "7":
-                request = requests.post("http://127.0.0.1:8000/users/register/", json = {
-                    "username": self.username,
-                    "email": self.email,
-                    "phone": self.phoneNumber,
-                    "password": self.password,
-                    "confirm_password": self.confirmPassword,
-                    "birthday": self.birthdate})
+                try:
+                    payload = {}
+                    if self.username is not None:
+                        payload['username'] = self.username
+                    if self.email is not None:
+                        payload['email'] = self.email
+                    if self.phoneNumber is not None:
+                        payload['phone'] = self.phoneNumber
+                    if self.password is not None:
+                        payload['password'] = self.password
+                    if self.confirmPassword is not None:
+                        payload['confirm_password'] = self.confirmPassword
+                    if self.birthdate is not None:
+                        payload['birthday'] = self.birthdate
+                    request = requests.post("http://127.0.0.1:8000/users/register/", json = payload)
+                    out = request.json()
+                except:
+                    message_dialog(title = "Error",
+                                   text = "Server Not Responding",
+                                   style = self.dialogStyle).run()
                 if request.status_code == 201:
                     message_dialog(title = "Success",
-                                   text = request.json()['message'],
+                                   text = out['message'],
                                    style = self.dialogStyles).run()
                     os.system('cls' if os.name == 'nt' else 'clear')
                     loginPage = LoginPage()
@@ -84,7 +97,7 @@ class RegisterPage(PageMaker):
                     break
                 else:
                     message_dialog(title = "Error",
-                                   text = request.json()['message'],
+                                   text = out['message'],
                                    style = self.dialogStyles).run()
 
             os.system('cls' if os.name == 'nt' else 'clear')
@@ -94,51 +107,51 @@ class RegisterPage(PageMaker):
 
     def drawUi(self):
         self.pageLength = max([self.pageLength, 
-                                len(self.username) + 27, 
-                                len(self.email) + 20,
-                                len(self.password) + 27,
-                                len(self.phoneNumber) + 35,
-                                len(self.confirmPassword) + 45,
-                                len(self.birthdate) + 28])
+                                len(str(self.username)) + 27, 
+                                len(str(self.email)) + 20,
+                                len(str(self.password)) + 27,
+                                len(str(self.phoneNumber)) + 35,
+                                len(str(self.confirmPassword)) + 45,
+                                len(str(self.birthdate)) + 28])
         self.drawLine(self.pageLength)
         self.drawEndedLine(self.pageLength)
         # drawing username
-        if self.username != "":
+        if self.username is not None:
             self.drawLineWithParametersStartAt(self.pageLength, 2, '1 - Username*', ':', 
                                                      self.username)
         else:
             self.drawLineWithParametersStartAt(self.pageLength, 2, '1 - Username*') 
 
         # drawing email
-        if self.email != "":
+        if self.email is not None:
             self.drawLineWithParametersStartAt(self.pageLength, 2, '2 - Email*', ':', 
                                                      self.email)
         else:
             self.drawLineWithParametersStartAt(self.pageLength, 2, '2 - Email*') 
         
         # drawing phone number
-        if self.phoneNumber != "":
+        if self.phoneNumber is not None:
             self.drawLineWithParametersStartAt(self.pageLength, 2, '3 - Phone number', ':', 
                                                      self.phoneNumber)
         else:
             self.drawLineWithParametersStartAt(self.pageLength, 2, '3 - Phone number') 
 
         # drawing password
-        if self.password != "":
+        if self.password is not None:
             self.drawLineWithParametersStartAt(self.pageLength, 2, '4 - Password*', ':', 
                                                      len(self.password) * "*")
         else:
             self.drawLineWithParametersStartAt(self.pageLength, 2, '4 - Password*') 
 
         # drawing confirm password
-        if self.confirmPassword != "":
+        if self.confirmPassword is not None:
             self.drawLineWithParametersStartAt(self.pageLength, 2, '5 - Confirm Password*', ':', 
                                                      len(self.confirmPassword) * "*")
         else:
             self.drawLineWithParametersStartAt(self.pageLength, 2, '5 - Confirm password*')
 
         # drawing birthdate
-        if self.birthdate != "":
+        if self.birthdate is not None:
             self.drawLineWithParametersStartAt(self.pageLength, 2, '6 - Birthdate*', ':', 
                                                      self.birthdate)
         else:

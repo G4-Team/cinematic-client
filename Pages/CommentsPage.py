@@ -30,20 +30,35 @@ class CommentsPage(PageMaker):
                 self.text = input_dialog(title = "Text",
                                          text = "Enter your comment:",
                                          style = self.dialogStyles).run()
-                request = requests.post(self.url + 'movie/review/add/' + str(user_id) + '/' + str(movie_id) + '/',
+                if self.rate is None or self.rate == "":
+                    message_dialog(title = "Error",
+                                   text = "rate cant be empty",
+                                   style = self.dialogStyles).run()
+                    continue
+                if self.text is None or self.text == "":
+                    message_dialog(title = "Error",
+                                   text = "text cant be empty",
+                                   style = self.dialogStyles).run()
+                    continue
+                try:
+                    request = requests.post(self.url + 'movie/review/add/' + str(user_id) + '/' + str(movie_id) + '/',
                                         cookies = self.get_cookies(), json = {
                                         "rate": int(self.rate),
                                         "text": self.text
                                         })
-                if request.status_code == 201:
-                    message_dialog(title = "Success",
+                    if request.status_code == 201:
+                        message_dialog(title = "Success",
                                    text = request.json()['message'],
                                    style = self.dialogStyles).run()
-                    self.loadDb(movie_id)
+                        self.loadDb(movie_id)
 
-                else:
-                    message_dialog(title = "Error",
+                    else:
+                        message_dialog(title = "Error",
                                    text = request.json()['message'],
+                                   style = self.dialogStyles).run()
+                except:
+                    message_dialog(title = "Error",
+                                   text = "Server not reponding",
                                    style = self.dialogStyles).run()
             elif command == "2":
                 self.replyOn = input_dialog(title = "Id",
@@ -53,21 +68,36 @@ class CommentsPage(PageMaker):
                 self.text = input_dialog(title = "Text",
                                          text = "Enter your response:",
                                          style = self.dialogStyles).run()
-                request = requests.post(self.url + 'movie/comment/add/' + str(user_id) + '/' + self.replyOn + '/',
+                if self.replyOn is None or self.replyOn == "":
+                    message_dialog(title = "Error",
+                                   text = "id cant be empty",
+                                   style = self.dialogStyles).run()
+                    continue
+                if self.text is None or self.text == "":
+                    message_dialog(title = "Error",
+                                   text = "text cant be empty",
+                                   style = self.dialogStyles).run()
+                    continue
+                try:
+                    request = requests.post(self.url + 'movie/comment/add/' + str(user_id) + '/' + self.replyOn + '/',
                                         cookies = self.get_cookies(), json = {
                                         "text": self.text})
 
-                if request.status_code == 201:
-                    message_dialog(title = "Success",
+                    if request.status_code == 201:
+                        message_dialog(title = "Success",
                                    text = request.json()['message'],
                                    style = self.dialogStyles).run()
-                    self.loadDb(movie_id)
+                        self.loadDb(movie_id)
 
-                else:
+                    else:
+                        message_dialog(title = "Error",
+                                   text = request.json()['message'],
+                                   style = self.dialogStyles).run()
+
+                except:
                     message_dialog(title = "Error",
-                                   text = request.json()['message'],
+                                   text = "Server not responding",
                                    style = self.dialogStyles).run()
-
             os.system('cls' if os.name == 'nt' else 'clear')
             self.drawUi()
 
@@ -87,10 +117,15 @@ class CommentsPage(PageMaker):
 
 
     def loadDb(self, movie_id):
-        request = requests.get(self.url + 'movie/comment/list/' + str(movie_id) + '/',
+        self.comments = {}
+        try:
+            request = requests.get(self.url + 'movie/comment/list/' + str(movie_id) + '/',
                                    cookies = self.get_cookies())
-        print(request.json())
-        self.comments = request.json()['movie_comments']
+            self.comments = request.json()['movie_comments']
+        except:
+            message_dialog(title = "Error",
+                           text = "Server not responding",
+                           style = self.dialogStyles).run()
 
     def drawComments(self, comments, depth):
         line = ""

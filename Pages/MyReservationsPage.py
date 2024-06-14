@@ -31,16 +31,36 @@ class MyReservationsPage(PageMaker):
 
             elif command == "9":
                 cancelReservation = input_dialog(title = "Cancel Reservation", 
-                                        text = "Enter the number of the reservation you want to cancel:",
+                                        text = "Enter the id of the reservation you want to cancel:",
                                         style = self.dialogStyles).run()
+                try:
+                    cancelReservation = int(cancelReservation)
+                except:
+                    message_dialog(title = "Error",
+                                   text = "id should be a number",
+                                   style = self.dialogStyles).run()
+                    continue
                 if cancelReservation is not None:
                     yesNo = yes_no_dialog(title = "Cancel Reservation",
-                                      text = "Are you Sure you want to cancel resevation number " + cancelReservation,
+                                      text = "Are you Sure you want to cancel resevation number " + str(cancelReservation),
                                       style = self.dialogStyles).run()
                     if yesNo:
-                        message_dialog(title = "Cancel Reservation",
-                                   text = "Reservation canceled successfuly!",
-                                   style = self.dialogStyles).run()
+                        try:
+                            request = requests.delete(self.url + 'cinema/cancel/' + str(user_id) + '/' + str(cancelReservation) + '/',
+                                                      cookies = self.get_cookies())
+                            if request.status_code == 200:
+                                message_dialog(title = "Cancel Reservation",
+                                    text = request.json()['message'], 
+                                    style = self.dialogStyles).run()
+                                self.loadDb(user_id)
+                            else:
+                                message_dialog(title = "Error",
+                                               text = request.json()['message'],
+                                               style = self.dialogStyles).run()
+                        except:
+                            message_dialog(title = "Error",
+                                           text = "Server not responding",
+                                           style = self.dialogStyles).run()
 
             os.system('cls' if os.name == 'nt' else 'clear')
             self.drawUi()
@@ -75,16 +95,21 @@ class MyReservationsPage(PageMaker):
     def loadDb(self, user_id):
         self.currentPage = 1
         self.movieList = []
-        request = requests.get(self.url + 'cinema/reserved-seats/' + str(user_id) + '/',
+        try:
+            request = requests.get(self.url + 'cinema/reserved-seats/' + str(user_id) + '/',
                                cookies = self.get_cookies())
-        for key, value in request.json()['reservations'].items():
-            req = requests.get(self.url + 'cinema/showtimes/' + str(value['showtime_id']) + '/',
+            for key, value in request.json()['reservations'].items():
+                req = requests.get(self.url + 'cinema/showtimes/' + str(value['showtime_id']) + '/',
                                cookies = self.get_cookies())
-            dic = {}
-            dic['id'] = str(value['id'])
-            dic['name'] = req.json()['showtimes']['showtime0']['movie']['name']
-            dic['date'] = req.json()['showtimes']['showtime0']['time']
-            dic['price'] =  str(req.json()['showtimes']['showtime0']['cinema']['ticket_price'])
-            dic['seat'] = 'row: ' + str(value['row']) + ' - col: ' + str(value['col'])
-            self.movieList.append(dic)
+                dic = {}
+                dic['id'] = str(value['id'])
+                dic['name'] = req.json()['showtimes']['showtime0']['movie']['name']
+                dic['date'] = req.json()['showtimes']['showtime0']['time']
+                dic['price'] =  str(req.json()['showtimes']['showtime0']['cinema']['ticket_price'])
+                dic['seat'] = 'row: ' + str(value['row']) + ' - col: ' + str(value['col'])
+                self.movieList.append(dic)
+        except:
+            message_dialog(title = "Error",
+                           text = "Server not responding",
+                           style = self.dialogStyles).run()
 

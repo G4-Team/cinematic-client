@@ -24,20 +24,24 @@ class BuySubscriptionPage(PageMaker):
                                       text = "Are you sure you want to buy the Silver subscription for 300T?", 
                                       style = self.dialogStyles).run()
                 if yesNo:
-                    request = requests.put(self.url + 'users/buy-subscription/' + str(user_id) + '/',
+                    try:
+                        request = requests.put(self.url + 'users/buy-subscription/' + str(user_id) + '/',
                                            cookies = self.get_cookies(), json = {
-                        "type_subscription": 'silver'
-                    })
-                    break
-                    if request.status_code == 200:
-                        message_dialog(title = 'Success',
+                            "type_subscription": 'silver'
+                        })
+                        if request.status_code == 200:
+                            message_dialog(title = 'Success',
                                        text = request.json()['message'],
                                        style = self.dialogStyles).run()
-                        os.system('cls' if os.name == 'nt' else 'clear')
-                        break
-                    else:
-                        message_dialog(title = 'Error',
+                            os.system('cls' if os.name == 'nt' else 'clear')
+                            break
+                        else:
+                            message_dialog(title = 'Error',
                                        text = request.json()['message'],
+                                       style = self.dialogStyles).run()
+                    except:
+                        message_dialog(title = "Error",
+                                       text = "Server not responding",
                                        style = self.dialogStyles).run()
                 else:
                     continue
@@ -46,21 +50,25 @@ class BuySubscriptionPage(PageMaker):
                                       text = "Are you sure you want to buy the Gold subscription for 600T?", 
                                       style = self.dialogStyles).run()
                 if yesNo:
-                    request = requests.put(self.url + 'users/buy-subscription/' + str(user_id) + '/', 
+                    try:
+                        request = requests.put(self.url + 'users/buy-subscription/' + str(user_id) + '/', 
                                            cookies = self.get_cookies(),
                                            json = {
-                        "type_subscription": 'gold'
-                    })
-                    break
-                    if request.status_code == 200:
-                        message_dialog(title = 'Success',
+                            "type_subscription": 'gold'
+                        })
+                        if request.status_code == 200:
+                            message_dialog(title = 'Success',
                                        text = request.json()['message'],
                                        style = self.dialogStyles).run()
-                        os.system('cls' if os.name == 'nt' else 'clear')
-                        break
-                    else:
-                        message_dialog(title = 'Error',
+                            os.system('cls' if os.name == 'nt' else 'clear')
+                            break
+                        else:
+                            message_dialog(title = 'Error',
                                        text = request.json()['message'],
+                                       style = self.dialogStyles).run()
+                    except:
+                        message_dialog(title = "Error",
+                                       text = "Server not responding",
                                        style = self.dialogStyles).run()
                 else:
                     continue

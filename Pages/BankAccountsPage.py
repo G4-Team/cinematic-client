@@ -48,16 +48,21 @@ class BankAccountsPage(PageMaker):
             self.drawUi()
 
     def loadDb(self, user_id):
-        requestGetAllCards = requests.get(self.url + 'bank/card/list/' + str(user_id) + '/',
-                                          cookies = self.get_cookies())
         self.banksList = []
-        for key, value in requestGetAllCards.json()['cards'].items():
-            dic = {}
-            dic['bankName'] = value['bank_name']
-            dic['cardNumber'] = value['card_number']
-            dic['cvv2'] = value['cvv2']
-            dic['expireDate'] = value['expiration_date']
-            self.banksList.append(dic)
+        try:
+            requestGetAllCards = requests.get(self.url + 'bank/card/list/' + str(user_id) + '/',
+                                          cookies = self.get_cookies())
+            for key, value in requestGetAllCards.json()['cards'].items():
+                dic = {}
+                dic['bankName'] = value['bank_name']
+                dic['cardNumber'] = value['card_number']
+                dic['cvv2'] = value['cvv2']
+                dic['expireDate'] = value['expiration_date']
+                self.banksList.append(dic)
+        except:
+            message_dialog(title = "Error",
+                           text = "Server not responding",
+                           style = self.dialogStyles).run()
     
     def drawUi(self):
         for card in self.banksList:

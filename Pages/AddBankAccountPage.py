@@ -11,12 +11,12 @@ class AddBankAccountPage(PageMaker):
         self.pageLength = 50
 
         # Initilizing variables
-        self.bankName = ""
-        self.cardNumber = ""
-        self.cvv2 = ""
-        self.passcode = ""
-        self.expireDate = ""
-        self.balance = ""
+        self.bankName = None
+        self.cardNumber = None
+        self.cvv2 = None
+        self.passcode = None
+        self.expireDate = None
+        self.balance = None
 
         # draw Ui 
         self.drawUi()
@@ -29,101 +29,124 @@ class AddBankAccountPage(PageMaker):
                 self.bankName = input_dialog(title = 'Bank Name',
                                              text = 'Enter Bank Name:',
                                              style = self.dialogStyles).run()
+                if self.bankName == "":
+                    self.bankName = None
             elif command == "2":
                 self.cardNumber = input_dialog(title = "Card Number",
                                     text = "Enter Card number:\n(ex. xxxx xxxx xxxx xxxx)",
                                     style = self.dialogStyles).run()
+                if self.cardNumber == "":
+                    self.cardNumber = None
             elif command == "3":
                 self.cvv2 = input_dialog(title = "CVV2",
                                          text = "Enter CVV2",
                                          style = self.dialogStyles,
                                          password = True).run()
+                if self.cvv2 == "":
+                    self.cvv2 = None
             elif command == "4":
                 self.expireDate = input_dialog(title = "Expire Date",
                                                text = "Enter Expire Date:\n(ex. 1403-06)",
                                                style = self.dialogStyles).run()
+                if self.expireDate == "":
+                    self.expireDate = None
             elif command == "5":
                 self.passcode = input_dialog(title = "Passcode",
                                              text = "Enter Passcode",
                                              style = self.dialogStyles,
                                              password = True).run()
+                if self.passcode == "":
+                    self.passcode = None
             elif command == "6":
                 self.balance = input_dialog(title = "Balance",
                                             text = "Enter Balance",
                                             style = self.dialogStyles).run()
+                if self.balance == "":
+                    self.balance == None
                 try:
                     self.balance = int(self.balance)
                 except:
-                    self.balance = ""
-                    message_dialog(title = "Error", 
+                    if self.balance is not None:
+                        message_dialog(title = "Error", 
                                    text = "Balance should be number",
                                    style = self.dialogStyles).run()
+                    self.balance = None
             elif command == "7":
-                request = requests.post(self.url + 'bank/card/add/' + str(user_id) + '/',
-                                        cookies = self.get_cookies(), json = {
-                                        "bank_name": self.bankName,
-                                        "card_number": self.cardNumber,
-                                        "cvv2": self.cvv2,
-                                        "expiration_date": self.expireDate,
-                                        "password": self.passcode,
-                                        "balance": self.balance})
-                if request.status_code == 201:
-                    message_dialog(title = "Success",
+                try:
+                    payload = {}
+                    if self.bankName is not None:
+                        payload['bank_name'] = self.bankName
+                    if self.cardNumber is not None:
+                        payload['card_number'] = self.cardNumber
+                    if self.cvv2 is not None:
+                        payload['cvv2'] = self.cvv2
+                    if self.expireDate is not None:
+                        payload['expiration_date'] = self.expireDate
+                    if self.passcode is not None:
+                        payload['password'] = self.passcode
+                    if self.balance is not None:
+                        payload['balance'] = self.balance
+                    request = requests.post(self.url + 'bank/card/add/' + str(user_id) + '/',
+                                        cookies = self.get_cookies(), json = payload)
+                    if request.status_code == 201:
+                        message_dialog(title = "Success",
                                text = request.json()['message'], 
                                style = self.dialogStyles).run()
-                    os.system('cls' if os.name == 'nt' else 'clear')
-                    print("what")
-                    break
-                else:
+                        os.system('cls' if os.name == 'nt' else 'clear')
+                        break
+                    else:
+                        message_dialog(title = "Error",
+                               text = request.json()['message'], 
+                               style = self.dialogStyles).run()
+                except:
                     message_dialog(title = "Error",
-                               text = request.json()['message'], 
-                               style = self.dialogStyles).run()
+                                   text = "Server not reponding",
+                                   style = self.dialogStyles).run()
             elif command == "8":
                 os.system('cls' if os.name == 'nt' else 'clear')
                 break
             os.system('cls' if os.name == 'nt' else 'clear')
             self.drawUi()
-        print("over")
 
     def drawUi(self):
         self.pageLength = max([self.pageLength, 
-                                len(self.bankName) + 30, 
-                                len(self.cardNumber) + 30,
-                                len(self.cvv2) + 25,
-                                len(self.passcode) + 30,
-                                len(self.expireDate) + 30])
+                                len(str(self.bankName)) + 30, 
+                                len(str(self.cardNumber)) + 30,
+                                len(str(self.cvv2)) + 25,
+                                len(str(self.passcode)) + 30,
+                                len(str(self.expireDate)) + 30])
         self.drawLine(self.pageLength)
         self.drawEndedLine(self.pageLength)
         # drawing bank name
-        if self.bankName != "":
+        if self.bankName is not None:
             self.drawLineWithParametersStartAt(self.pageLength, 2, '1 - Bank Name', ':', 
                                                      self.bankName)
         else:
             self.drawLineWithParametersStartAt(self.pageLength, 2, '1 - Bank Name') 
 
         # drawing card number
-        if self.cardNumber != "":
+        if self.cardNumber is not None:
             self.drawLineWithParametersStartAt(self.pageLength, 2, '2 - Card Number', ':', 
                                                      self.cardNumber)
         else:
             self.drawLineWithParametersStartAt(self.pageLength, 2, '2 - Card Number') 
 
         # drawing cvv2
-        if self.cvv2 != "":
+        if self.cvv2 is not None:
             self.drawLineWithParametersStartAt(self.pageLength, 2, '3 - CVV2', ':', 
                                                      len(self.cvv2) * '*')
         else:
             self.drawLineWithParametersStartAt(self.pageLength, 2, '3 - CVV2') 
         
         # drawing expire date
-        if self.expireDate != "":
+        if self.expireDate is not None:
             self.drawLineWithParametersStartAt(self.pageLength, 2, '4 - Expire Date', ':', 
                                                      self.expireDate)
         else:
             self.drawLineWithParametersStartAt(self.pageLength, 2, '4 - Expire Date') 
 
         # drawing passcode
-        if self.passcode != "":
+        if self.passcode is not None:
             self.drawLineWithParametersStartAt(self.pageLength, 2, '5 - Passcode', ':', 
                                                      len(self.passcode) * "*")
         else:
@@ -131,7 +154,7 @@ class AddBankAccountPage(PageMaker):
 
         self.drawEndedLine(self.pageLength)
         #draw balance
-        if self.balance != "":
+        if self.balance is not None:
             self.drawLineWithParametersStartAt(self.pageLength, 2, '6 - Balance', ':', 
                                                      str(self.balance))
         else:

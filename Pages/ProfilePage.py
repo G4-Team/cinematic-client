@@ -1,5 +1,6 @@
 import os
 import requests
+from prompt_toolkit.shortcuts import message_dialog
 
 from .PageMaker import PageMaker
 from .BuySubscriptionPage import BuySubscriptionPage
@@ -32,7 +33,9 @@ class ProfilePage(PageMaker):
             try:
                 command = int(command)
             except:
-                command = ""
+                os.system('cls' if os.name == 'nt' else 'clear')
+                self.drawUi()
+                continue
             if 1 <= command <= 8:
                 os.system('cls' if os.name == 'nt' else 'clear')
                 showtimeDetailsPage = ShowtimeDetailsPage(self.showtimeDetails[command - 1 + (self.currentPage - 1) * 8], user_id)
@@ -79,23 +82,31 @@ class ProfilePage(PageMaker):
 
 
     def loadDb(self, user_id):
-        request = requests.get(self.url + 'users/profile/' + str(user_id) + '/',
-                               cookies = self.get_cookies())
-        self.username = 'Username: ' + request.json()['user']['username']
-        self.balance = 'Balance: ' + str(request.json()['user']['wallet'])
-        self.subscription = 'Subscription: ' + request.json()['user']['cinema-subscription']['type']
         self.movieList = []
-        requestMovieList = requests.get(self.url + 'cinema/showtimes/' + str(user_id) + '/',
+        self.username = "Username: Not found"
+        self.balance = "Balance: Not found"
+        self.subscription = "Subscription: Not found"
+        try:
+            request = requests.get(self.url + 'users/profile/' + str(user_id) + '/',
+                               cookies = self.get_cookies())
+            self.username = 'Username: ' + request.json()['user']['username']
+            self.balance = 'Balance: ' + str(request.json()['user']['wallet'])
+            self.subscription = 'Subscription: ' + request.json()['user']['cinema-subscription']['type']
+            requestMovieList = requests.get(self.url + 'cinema/showtimes/' + str(user_id) + '/',
                                         cookies = self.get_cookies())
-        self.showtimeDetails = []
-        for key, value in requestMovieList.json()['showtimes'].items():
-            dic = {}
-            dic['name'] = value['movie']['name']
-            dic['date'] = value['time']
-            dic['capacityLeft'] = str(value['capacity'])
-            dic['price'] = str(value['cinema']['ticket_price'])
-            self.showtimeDetails.append(value)
-            self.movieList.append(dic)
+            self.showtimeDetails = []
+            for key, value in requestMovieList.json()['showtimes'].items():
+                dic = {}
+                dic['name'] = value['movie']['name']
+                dic['date'] = value['time']
+                dic['capacityLeft'] = str(value['capacity'])
+                dic['price'] = str(value['cinema']['ticket_price'])
+                self.showtimeDetails.append(value)
+                self.movieList.append(dic)
+        except:
+            message_dialog(title = "Error",
+                           text = "Server not responding wtf",
+                           style = self.dialogStyles).run()
 
     def drawUi(self):
         # Makeing sure the pageLength can contain everything 
