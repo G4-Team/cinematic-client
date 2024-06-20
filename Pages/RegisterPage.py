@@ -58,7 +58,7 @@ class RegisterPage(PageMaker):
                 self.drawUi()
             elif command == "6":
                 self.birthdate = input_dialog(title = "Birthdate", 
-                                              text = "Enter your Birthdate:\n(ex. yyyy/mm/dd)",
+                                              text = "Enter your Birthdate:\n(ex. yyyy-mm-dd)",
                                               style = self.dialogStyles).run()
                 os.system('cls' if os.name == 'nt' else 'clear')
                 self.drawUi()
@@ -81,7 +81,7 @@ class RegisterPage(PageMaker):
                         payload['confirm_password'] = self.confirmPassword
                     if self.birthdate is not None:
                         payload['birthday'] = self.birthdate
-                    request = requests.post("http://127.0.0.1:8000/users/register/", json = payload)
+                    request = requests.post(self.url + "users/register/", json = payload)
                     out = request.json()
                 except:
                     message_dialog(title = "Error",

@@ -45,6 +45,10 @@ class BuySubscriptionPage(PageMaker):
                                        style = self.dialogStyles).run()
                 else:
                     continue
+            elif command == "3":
+                os.system('cls' if os.name == 'nt' else 'clear')
+                break
+
             elif command == "2":
                 yesNo = yes_no_dialog(title = "Confirm Purchase",
                                       text = "Are you sure you want to buy the Gold subscription for 600T?", 
@@ -83,6 +87,8 @@ class BuySubscriptionPage(PageMaker):
         self.drawLineWithParameters(self.pageLength, '1 - Silver')
         self.drawEndedLine(self.pageLength)
         self.drawLineWithParameters(self.pageLength, '2 - Gold')
+        self.drawEndedLine(self.pageLength)
+        self.drawLineWithParameters(self.pageLength, '3 - Back')
         self.drawEndedLine(self.pageLength)
         self.drawLine(self.pageLength)
 

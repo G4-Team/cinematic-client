@@ -99,13 +99,13 @@ class MyReservationsPage(PageMaker):
             request = requests.get(self.url + 'cinema/reserved-seats/' + str(user_id) + '/',
                                cookies = self.get_cookies())
             for key, value in request.json()['reservations'].items():
-                req = requests.get(self.url + 'cinema/showtimes/' + str(value['showtime_id']) + '/',
+                req = requests.get(self.url + 'cinema/showtime/' + str(value['showtime_id']) + '/',
                                cookies = self.get_cookies())
                 dic = {}
                 dic['id'] = str(value['id'])
-                dic['name'] = req.json()['showtimes']['showtime0']['movie']['name']
-                dic['date'] = req.json()['showtimes']['showtime0']['time']
-                dic['price'] =  str(req.json()['showtimes']['showtime0']['cinema']['ticket_price'])
+                dic['name'] = req.json()['showtime']['movie']['name']
+                dic['date'] = req.json()['showtime']['time']
+                dic['price'] =  str(req.json()['showtime']['cinema']['ticket_price'])
                 dic['seat'] = 'row: ' + str(value['row']) + ' - col: ' + str(value['col'])
                 self.movieList.append(dic)
         except:

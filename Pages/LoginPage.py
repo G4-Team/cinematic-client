@@ -42,7 +42,7 @@ class LoginPage(PageMaker):
                         payload['username'] = self.username
                     if self.password is not None:
                         payload['password'] = self.password
-                    request = requests.post("http://127.0.0.1:8000/users/login/", json = payload)
+                    request = requests.post(self.url + "/users/login/", json = payload)
                     out = request.json()
                 except:
                     message_dialog(title = "Error",

@@ -46,7 +46,7 @@ class AddBankAccountPage(PageMaker):
                     self.cvv2 = None
             elif command == "4":
                 self.expireDate = input_dialog(title = "Expire Date",
-                                               text = "Enter Expire Date:\n(ex. 1403-06)",
+                                               text = "Enter Expire Date:\n(ex. 03-06)",
                                                style = self.dialogStyles).run()
                 if self.expireDate == "":
                     self.expireDate = None
